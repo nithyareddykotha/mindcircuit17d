@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('clone') {
+            steps {
+                echo 'cloning code from git'
+                git branch: 'main', url: 'https://github.com/nithyareddykotha/mindcircuit17d.git'
+            }
+        }
+    
+        stage('build') {
+            steps {
+                echo 'building'
+                sh 'mvn clean install'
+                
+            }
+        }
+    
+        stage('deploy on tomcat') {
+            steps {
+                echo 'deploying on tomcat'
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat1', path: '', url: 'http://ec2-18-234-113-111.compute-1.amazonaws.com:8080/manager/html')], contextPath: 'nivamrest', war: '**/*.war'
+            }
+        }
+    }
+}
